@@ -2,14 +2,6 @@
 
 Track, visualize, and compare the performance of **stocks, bonds, and mutual funds** with Python, Pandas, and Matplotlib. Feed it a simple CSV of holdings and it produces charts, risk metrics, benchmark comparisons, and plain-English insights.
 
-![tests](https://github.com/JMayor10/InvestTracker-1/actions/workflows/tests.yml/badge.svg)
-![Python](https://img.shields.io/badge/python-3.10%2B-blue)
-
-<!-- After your first run, copy the PNGs from output/ into docs/images/ -->
-<p align="center">
-  <img src="docs/images/performance.png" width="48%" alt="Portfolio vs benchmark">
-  <img src="docs/images/allocation_vs_risk.png" width="48%" alt="Allocation vs risk by asset class">
-</p>
 
 ## What it does
 
