@@ -1,148 +1,118 @@
 # 📈 Investment Portfolio Tracker
 
-Track, visualize, and compare the performance of **stocks, bonds, and mutual funds** using Python, Pandas, and Matplotlib. Works with a simple CSV file or as a companion analytics tool for a self-hosted [Ghostfolio](https://ghostfol.io) instance.
+Track, visualize, and compare the performance of **stocks, bonds, and mutual funds** with Python, Pandas, and Matplotlib. Feed it a simple CSV of holdings and it produces charts, risk metrics, benchmark comparisons, and plain-English insights.
 
+![tests](https://github.com/<your-username>/portfolio-tracker/actions/workflows/tests.yml/badge.svg)
 ![Python](https://img.shields.io/badge/python-3.10%2B-blue)
-![License](https://img.shields.io/badge/license-MIT-green)
-![Tests](https://img.shields.io/badge/tests-passing-brightgreen)
 
-<!-- Replace these with your own screenshots (save them in /docs/images) -->
+<!-- After your first run, copy the PNGs from output/ into docs/images/ -->
 <p align="center">
-  <img src="docs/images/cumulative_return.png" width="48%" alt="Cumulative return vs benchmark">
-  <img src="docs/images/allocation.png" width="48%" alt="Asset allocation">
+  <img src="docs/images/performance.png" width="48%" alt="Portfolio vs benchmark">
+  <img src="docs/images/allocation_vs_risk.png" width="48%" alt="Allocation vs risk by asset class">
 </p>
 
----
+## What it does
 
-## ✨ Features
+- **Asset-class tracking:** stocks, funds (mutual funds/ETFs), and bonds (use bond ETFs like `BND` or `AGG`, or any mutual fund ticker Yahoo Finance supports)
+- **Benchmark comparison:** portfolio vs. a benchmark (default `SPY`), rebased to 100
+- **Trailing returns:** 1M / 6M / 1Y / 5Y for the portfolio, the benchmark, and each asset class
+- **Risk metrics:** annualized volatility, max drawdown (with date), Sharpe ratio, CAGR
+- **Allocation vs. risk:** how much of the portfolio each asset class is vs. how much of the risk it drives
+- **Auto-generated insights:** plain-English findings saved to `output/summary.md`
 
-- **Multi-asset tracking:** stocks, ETFs, mutual funds, and bonds (via bond ETFs such as BND or AGG)
-- **Performance charts:** cumulative return, rolling returns, allocation breakdown
-- **Risk metrics:** annualized volatility, max drawdown, Sharpe ratio
-- **Past return comparison:** portfolio vs. benchmark (e.g. S&P 500) and by asset class over 1M, 6M, 1Y, and 5Y
-- **Auto-generated insights:** plain-English summaries of what drove your returns and risk
-- **Flexible input:** CSV file or the Ghostfolio API
-
-## 🧠 Sample Insights
-
-> Replace these with real output from your sample portfolio.
-
-- Equities were **78%** of the portfolio but drove **91%** of its volatility.
-- The portfolio returned **X%** over 1Y vs. **Y%** for the S&P 500.
-- Maximum drawdown was **-Z%**, reached in *[month, year]*.
-- Bonds reduced overall volatility by roughly **N%** compared to an all-equity mix.
-
-## 🚀 Quick Start
+## Quick start
 
 ```bash
-# 1. Clone the repo
 git clone https://github.com/<your-username>/portfolio-tracker.git
 cd portfolio-tracker
 
-# 2. Install dependencies
 python -m venv .venv
 source .venv/bin/activate        # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 
-# 3. Run on the included sample data
-python -m src.report --input data/sample_portfolio.csv --benchmark SPY
+python main.py
 ```
 
-Charts and the summary report are saved to the `output/` folder.
+Results are written to `output/`: `performance.png`, `allocation_vs_risk.png`, `drawdown.png`, and `summary.md`.
 
-## 📂 Input Format (CSV)
-
-| Column | Description | Example |
-|--------|-------------|---------|
-| `ticker` | Ticker symbol | `AAPL` |
-| `asset_class` | `stock`, `bond`, or `fund` | `stock` |
-| `shares` | Number of shares/units held | `25` |
-| `purchase_date` | Date bought (YYYY-MM-DD) | `2021-03-15` |
-| `purchase_price` | Price per share at purchase | `121.03` |
-
-See [`data/sample_portfolio.csv`](data/sample_portfolio.csv) for a working example.
-
-## 👻 Ghostfolio Integration (Optional)
-
-This tool is a **companion** to Ghostfolio, not a plugin that runs inside it. It reads your data from your Ghostfolio instance and produces extra analytics and charts.
+### Options
 
 ```bash
-cp .env.example .env
-# Edit .env and set:
-#   GHOSTFOLIO_URL=http://localhost:3333
-#   GHOSTFOLIO_TOKEN=<your-security-token>
-
-python -m src.report --source ghostfolio --benchmark SPY
+python main.py --input data/my_portfolio.csv --period 2y --benchmark QQQ --risk-free 0.04
 ```
 
-Endpoints and authentication can change between Ghostfolio versions, so check the [Ghostfolio docs](https://github.com/ghostfolio/ghostfolio) if the connection fails.
+| Flag | Default | Description |
+|------|---------|-------------|
+| `--input` | `data/sample_portfolio.csv` | Holdings CSV |
+| `--period` | `5y` | History to analyze: `1y`, `2y`, `5y`, `10y`, `max` |
+| `--benchmark` | `SPY` | Benchmark ticker |
+| `--risk-free` | `0.0` | Annual risk-free rate used for Sharpe (e.g. `0.04`) |
+| `--output-dir` | `output` | Where results are saved |
 
-## 🗂 Project Structure
+## Input format
 
-```
-portfolio-tracker/
-├── src/
-│   ├── ingest.py       # CSV loader + Ghostfolio API client
-│   ├── prices.py       # Price data via yfinance
-│   ├── metrics.py      # Returns, volatility, drawdown, Sharpe
-│   ├── charts.py       # Matplotlib visualizations
-│   └── report.py       # Insights summary + report generation
-├── data/
-│   └── sample_portfolio.csv
-├── notebooks/
-│   └── demo.ipynb
-├── tests/
-├── docs/images/
-├── requirements.txt
-└── README.md
+```csv
+ticker,asset_class,shares
+AAPL,stock,40
+FXAIX,fund,50
+BND,bond,120
 ```
 
-## 📊 How Metrics Are Calculated
+`asset_class` must be `stock`, `fund`, or `bond`. Repeated tickers are combined. See [`data/sample_portfolio.csv`](data/sample_portfolio.csv).
+
+## ⚠️ Important: this is a "what-if" analysis
+
+The tool assumes **today's share counts were held for the entire period**. It answers "how would this exact portfolio have performed?", not "what did I actually earn?". Real performance needs purchase dates and transactions (see the roadmap).
+
+## How metrics are calculated
 
 | Metric | Method |
 |--------|--------|
-| Daily return | `pct_change()` on adjusted close prices |
-| Portfolio return | Weighted sum of asset returns |
-| Cumulative return | `(1 + r).cumprod() - 1` |
+| Total return | `end value / start value − 1` |
+| CAGR | `(1 + total return)^(1 / years) − 1` |
 | Annualized volatility | `std(daily returns) × √252` |
-| Max drawdown | Largest peak-to-trough decline in cumulative value |
-| Sharpe ratio | `(annualized return − risk-free rate) / annualized volatility` |
+| Sharpe ratio | `(mean daily return × 252 − risk-free) / annualized volatility` |
+| Max drawdown | Largest peak-to-trough decline of portfolio value |
+| Share of risk | Each asset class's covariance with portfolio return ÷ portfolio variance (shares sum to 100%) |
 
-## 🧪 Running Tests
+Prices are split- and dividend-adjusted closes from Yahoo Finance via `yfinance`. If one holding has a shorter history, the whole analysis is trimmed to the overlapping dates and a warning is printed.
+
+## Project structure
+
+```
+portfolio-tracker/
+├── main.py                  # CLI entry point
+├── src/
+│   ├── ingest.py            # CSV loading + validation
+│   ├── prices.py            # yfinance price fetching
+│   ├── metrics.py           # returns, volatility, drawdown, Sharpe, risk shares
+│   ├── charts.py            # Matplotlib charts
+│   └── report.py            # insights + Markdown report
+├── data/sample_portfolio.csv
+├── tests/                   # pytest (no network needed)
+└── .github/workflows/tests.yml
+```
+
+## Tests
 
 ```bash
 pytest
 ```
 
-## 🛠 Tech Stack
+Tests cover the metric math, CSV validation, and a full end-to-end run on synthetic prices, so they work offline and in CI.
 
-- **Python 3.10+**
-- **Pandas / NumPy:** data handling and calculations
-- **Matplotlib:** charts
-- **yfinance:** market price data
-- **requests / python-dotenv:** Ghostfolio API access
+## Roadmap
 
-## 🗺 Roadmap
-
+- [ ] Ghostfolio integration: pull holdings and transactions from a self-hosted instance (it's a companion tool, not a plugin that runs inside Ghostfolio)
+- [ ] Real performance using purchase dates and prices (money-weighted return / XIRR)
 - [ ] Dividend and contribution tracking
-- [ ] Monte Carlo projection
-- [ ] Correlation heatmap
-- [ ] Export report to PDF
-- [ ] Multi-currency support
+- [ ] Correlation heatmap and Monte Carlo projection
+- [ ] PDF export of the report
 
-## ⚠️ Disclaimer
+## Disclaimer
 
-This project is for educational and informational purposes only and is **not financial advice**. Past performance does not guarantee future results. Market data from third-party sources may be delayed or inaccurate.
+For educational purposes only. Not financial advice. Past performance does not guarantee future results, and third-party market data may be delayed or inaccurate.
 
-## 🔐 Privacy
+## License
 
-Never commit real account data or API tokens. Keep secrets in `.env` (already in `.gitignore`).
-
-## 📄 License
-
-Released under the [MIT License](LICENSE).
-
-## 🙌 Acknowledgements
-
-- [Ghostfolio](https://ghostfol.io) for the open-source wealth management platform
-- [yfinance](https://github.com/ranaroussi/yfinance) for market data access
+MIT. Add a `LICENSE` file before publishing.
