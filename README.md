@@ -23,7 +23,7 @@ Track, visualize, and compare the performance of **stocks, bonds, and mutual fun
 ## Quick start
 
 ```bash
-git clone https://github.com/<your-username>/portfolio-tracker.git
+git clone https://github.com/JMayor10/portfolio-tracker.git
 cd portfolio-tracker
 
 python -m venv .venv
