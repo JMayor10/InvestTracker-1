@@ -1,8 +1,8 @@
-# 📈 Investment Portfolio Tracker
+# 📈 InvestTracker: Investment Portfolio Tracker
 
 Track, visualize, and compare the performance of **stocks, bonds, and mutual funds** with Python, Pandas, and Matplotlib. Feed it a simple CSV of holdings and it produces charts, risk metrics, benchmark comparisons, and plain-English insights.
 
-![tests](https://github.com/<your-username>/portfolio-tracker/actions/workflows/tests.yml/badge.svg)
+![tests](https://github.com/JMayor10/InvestTracker-1/actions/workflows/tests.yml/badge.svg)
 ![Python](https://img.shields.io/badge/python-3.10%2B-blue)
 
 <!-- After your first run, copy the PNGs from output/ into docs/images/ -->
@@ -23,8 +23,8 @@ Track, visualize, and compare the performance of **stocks, bonds, and mutual fun
 ## Quick start
 
 ```bash
-git clone https://github.com/JMayor10/portfolio-tracker.git
-cd portfolio-tracker
+git clone https://github.com/JMayor10/InvestTracker-1.git
+cd InvestTracker-1
 
 python -m venv .venv
 source .venv/bin/activate        # Windows: .venv\Scripts\activate
@@ -80,7 +80,7 @@ Prices are split- and dividend-adjusted closes from Yahoo Finance via `yfinance`
 ## Project structure
 
 ```
-portfolio-tracker/
+InvestTracker-1/
 ├── main.py                  # CLI entry point
 ├── src/
 │   ├── ingest.py            # CSV loading + validation
@@ -113,4 +113,6 @@ Tests cover the metric math, CSV validation, and a full end-to-end run on synthe
 
 For educational purposes only. Not financial advice. Past performance does not guarantee future results, and third-party market data may be delayed or inaccurate.
 
+## License
 
+MIT. Add a `LICENSE` file before publishing.
