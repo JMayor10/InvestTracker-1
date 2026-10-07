@@ -113,6 +113,4 @@ Tests cover the metric math, CSV validation, and a full end-to-end run on synthe
 
 For educational purposes only. Not financial advice. Past performance does not guarantee future results, and third-party market data may be delayed or inaccurate.
 
-## License
 
-MIT. Add a `LICENSE` file before publishing.
